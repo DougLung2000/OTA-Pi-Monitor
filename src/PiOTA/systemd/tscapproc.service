@@ -1,0 +1,9 @@
+[Unit]
+Description="Run tscapproc.sh script to capture tranport stream and transcode streams
+
+[Service]
+User=pbs
+WorkingDirectory=/home/pbs/dtvdata/
+ExecStart=/home/pbs/dtvdata/tscapproc.sh
+
+

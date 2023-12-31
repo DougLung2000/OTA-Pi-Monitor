@@ -1,0 +1,11 @@
+[Unit]
+Description="Run tscapproc.service once every hour on hour"
+
+[Timer]
+OnBootSec=5min
+OnCalendar=*:29,59:30
+Unit=tscapproc.service
+
+[Install]
+WantedBy=multi-user.target
+

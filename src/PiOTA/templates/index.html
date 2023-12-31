@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="//code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.0/socket.io.min.js"></script>
+    <script src="static/js/signalapp.js"></script>
+
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+    <h2>K36OZ Remote Signal Data</h2>
+    <p>(Allow a few seconds for data to be displayed after loading page)</p>
+</div>
+<div class="container" id="content">
+    <div>
+        <h3>Measured data (real time):
+        <div id="log">
+        </div> <!-- /#log -->
+    </div>
+</div>
+<div class="container">
+<center>
+		<h3>K36OZ OTA</h3>
+		<p>Transport stream recorded at 29.5 and 59.5 minutes after each hour <br>
+		Transcoded videos available approximately 4 minutes after recording</p>
+		<p>Program Stream 3 MPEG4/AAC transcode to 960x540 @ 15 fps<p>
+<video width="960" height="540" controls>
+    <source src="{{url_for('static', filename='K36OZ-3-540.mp4')}}" type="video/mp4">
+</video>
+		<p>Program Stream 4 MPEG4/AAC transcode @ 15 fps<p>
+<video width="854" height="480" controls>
+    <source src="{{url_for('static', filename='K36OZ-4-480.mp4')}}" type="video/mp4">
+</video>
+		<p>Program Stream 3 MPEG4/AAC transcode @ 15 fps<p>
+<video width="854" height="480" controls>
+    <source src="{{url_for('static', filename='K36OZ-5-480.mp4')}}" type="video/mp4">
+</video>
+</center>
+</div>
+<div class="container">
+<pre> 
+{{ text }} 
+</pre> 
+</div>
+</body>
+</html>
