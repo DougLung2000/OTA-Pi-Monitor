@@ -1,61 +1,40 @@
 """
-Demo Flask application to test the operation of Flask with socket.io
-
-
-
-===================
-
-Updated 22 August 2023
 
 + Upgraded code to Python 3
 + Used Python3 SocketIO implementation
 + Updated CDN Javascript and CSS sources
 
 """
+import gevent
+# eventlet.monkey_patch()
+# from gevent.pywsgi import WGSIServer
 
-
-
-
-# Start with a basic flask app webpage.
-#from gevent import monkey
-#monkey.patch_all()
-
-import eventlet
-eventlet.monkey_patch()
-
-async_mode = "eventlet"
+async_mode = "gevent"
 
 from flask_socketio import SocketIO, emit
 from flask import Flask, render_template, url_for, copy_current_request_context
 from random import random
 import time
 from time import sleep
+# from eventlet import sleep
 from threading import Thread, Event
 import subprocess
 import shlex
-
-
-
-__author__ = 'slynn'
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 app.config['DEBUG'] = True
 
 #turn the flask app into a socketio app
-socketio = SocketIO(app, async_mode="eventlet", logger=True, engineio_logger=True)
+socketio = SocketIO(app, async_mode="gevent", logger=True, engineio_logger=True, threaded=True)
 
 
-#Time generator thread
+#Signal data server thread
 thread = Thread()
 thread_stop_event = Event()
 
 def SignalDataServer():
-    """
-    Generate a time string  every half second and emit to a socketio instance (broadcast)
-    Ideally to be run in a separate thread?
-    """
-    #Continuous output of date and time
+    #Continuous output of signal data
     print("Serving Signal Data")
     continuity_errors = "0" 
     siglevel = ''
@@ -66,9 +45,12 @@ def SignalDataServer():
     maxSNR = 5
     sigcount = 0
     snrcount = 0
-    command = 'sh ./sigdata2.sh'
+    pid49_rate = ''
+    pid65_rate = ''
+    pid81_rate = ''
+    command = 'sh ../sigdata3.sh'
     process = subprocess.Popen(shlex.split(command), stdout=subprocess.PIPE)    
-    while not thread_stop_event.isSet():
+    while not thread_stop_event.is_set():
         output = process.stdout.readline()
         if output:
             output = output.decode()
@@ -89,46 +71,66 @@ def SignalDataServer():
                 maxdBm = dBm
             if snrdB > maxSNR :
                 maxSNR = snrdB
+            if ("   49  " in output) & ("bps " in output):
+                pid49_rate = output.split(' p/s ')[1].strip().split()[0] + ' ' + \
+                             output.split(' p/s ')[1].strip().split()[1] 
+                print('PID 49 rate =',pid49_rate)
+            if ("   65  " in output) & ("bps " in output):
+                pid65_rate = output.split(' p/s ')[1].strip().split()[0] + ' ' + \
+                             output.split(' p/s ')[1].strip().split()[1]
+                print('PID 65 rate =',pid65_rate)
+            if ("   81  " in output) & ("bps " in output):
+                pid81_rate = output.split(' p/s ')[1].strip().split()[0] + ' ' + \
+                             output.split(' p/s ')[1].strip().split()[1] 
+                print('PID 81 rate =',pid81_rate)
         
         if (snrlevel != '') and (siglevel != '') : 
             SignalData = 'Signal strength: ' + siglevel + '<br>  SNR: ' + snrlevel +'<br>'+ \
 'Maximum  Signal: ' + str(maxdBm) + ' dBm\n' + ' SNR: ' + \
-str(maxSNR) + ' dB<br>' + 'Continuity Count (10 minutes): ' + continuity_errors
+str(maxSNR) + ' dB<br>' + 'Continuity Count (10 minutes): ' + continuity_errors + '<br>' \
++ 'PID 49 rate: ' + pid49_rate + '<br>' + 'PID 65 rate: ' + pid65_rate + '<br>' \
++ 'PID 81 rate: ' + pid81_rate
             print(SignalData)
+            socketio.sleep(1)
             socketio.emit('newdata', {'SignalData': SignalData}, namespace='/test')
             snrlevel = ''
             siglevel = ''
             continuity_errors = ''
-            socketio.sleep(1)
-#    subprocess.Popen.kill(process)
-
+#            socketio.sleep(1)
+           
+#    thread_event.clear()
+#    thread = None
 
 @app.route('/')
 def index():
     #only by sending this page first will the client be connected to the socketio instance
-#    return render_template('index.html')
-
-#def content(): 
+#    eventlet.sleep(1)
     with open('static/analysis.txt', 'r') as f: 
         return render_template('index.html', 
 text=f.read()) 
 
-@socketio.on('connect', namespace='/test')
+#@socketio.on('connect', namespace='/test')
+@socketio.on('connect')
 def test_connect():
     # need visibility of the global thread object
     global thread
     print('Client connected')
 
-    #Start the time generator thread only if the thread has not been started before.
-    if not thread.is_alive():
-        print("Starting Thread")
-        thread = socketio.start_background_task(SignalDataServer)
+#Start the signal server thread only if the thread has not been started before.
+#    eventlet.sleep(1)
+#    if not thread.is_alive():
+#        print("Starting Thread")
+thread = socketio.start_background_task(SignalDataServer)
 
 @socketio.on('disconnect', namespace='/test')
 def test_disconnect():
     print('Client disconnected')
+#    with thread_lock:
+#        if thread is not None:
+#            thread.join()
+#            thread = None
  
 
 if __name__ == '__main__':
-#    socketio.run(app,host='192.168.1.210',port=5000)
+
     socketio.run(app,host='0.0.0.0',port=8088)
