@@ -5,7 +5,6 @@ Description=Sigdata service
 User=pbs
 WorkingDirectory=/home/pbs/dtvdata/venv/
 ExecStart=/home/pbs/dtvdata/venv/bin/python3 sigdata.py
-RuntimeMaxSec=600s
 Restart=always
 
 [Install]
