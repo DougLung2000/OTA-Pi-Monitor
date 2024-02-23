@@ -1,13 +1,10 @@
 """
 
 + Upgraded code to Python 3
-+ Used Python3 SocketIO implementation
-+ Updated CDN Javascript and CSS sources
++ Uses Python3 SocketIO implementation
 
 """
 import gevent
-# eventlet.monkey_patch()
-# from gevent.pywsgi import WGSIServer
 
 async_mode = "gevent"
 
@@ -16,7 +13,6 @@ from flask import Flask, render_template, url_for, copy_current_request_context
 from random import random
 import time
 from time import sleep
-# from eventlet import sleep
 from threading import Thread, Event
 import subprocess
 import shlex
@@ -87,7 +83,7 @@ def SignalDataServer():
         if (snrlevel != '') and (siglevel != '') : 
             SignalData = 'Signal strength: ' + siglevel + '<br>  SNR: ' + snrlevel +'<br>'+ \
 'Maximum  Signal: ' + str(maxdBm) + ' dBm\n' + ' SNR: ' + \
-str(maxSNR) + ' dB<br>' + 'Continuity Count (10 minutes): ' + continuity_errors + '<br>' \
+str(maxSNR) + ' dB<br>' + 'Continuity Count (5 minutes): ' + continuity_errors + '<br>' \
 + 'PID 49 rate: ' + pid49_rate + '<br>' + 'PID 65 rate: ' + pid65_rate + '<br>' \
 + 'PID 81 rate: ' + pid81_rate
             print(SignalData)
@@ -96,40 +92,24 @@ str(maxSNR) + ' dB<br>' + 'Continuity Count (10 minutes): ' + continuity_errors 
             snrlevel = ''
             siglevel = ''
             continuity_errors = ''
-#            socketio.sleep(1)
-           
-#    thread_event.clear()
-#    thread = None
 
 @app.route('/')
 def index():
-    #only by sending this page first will the client be connected to the socketio instance
-#    eventlet.sleep(1)
     with open('static/analysis.txt', 'r') as f: 
         return render_template('index.html', 
 text=f.read()) 
 
-#@socketio.on('connect', namespace='/test')
 @socketio.on('connect')
 def test_connect():
     # need visibility of the global thread object
     global thread
     print('Client connected')
 
-#Start the signal server thread only if the thread has not been started before.
-#    eventlet.sleep(1)
-#    if not thread.is_alive():
-#        print("Starting Thread")
 thread = socketio.start_background_task(SignalDataServer)
 
 @socketio.on('disconnect', namespace='/test')
 def test_disconnect():
-    print('Client disconnected')
-#    with thread_lock:
-#        if thread is not None:
-#            thread.join()
-#            thread = None
- 
+    print('Client disconnected') 
 
 if __name__ == '__main__':
 
