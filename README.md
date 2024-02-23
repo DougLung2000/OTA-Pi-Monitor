@@ -1,3 +1,6 @@
+# 2024-02-22
+Moved tuner reset to the sigdata3.sh script and removed the 10 minute timeout from the sigdata.service, avoiding loss of the web site every 10 minutes. The user only notices a short pause in the update of the real-time data during the tuner reset, which is 5 minutes (300 seconds) in the new sigdata3.sh script.  
+
 # OTA-Pi-Monitor
 Remotely monitor over-the-air digital TV transmissions with ARM SBCs
 
