@@ -1,3 +1,7 @@
+# 2024-02-25
+The program will work with the Gunicorn WSGI. I will upload the modified files after testing but if you want to test it, change the next to last line in sigdata.py from "socketio.run(app,host='0.0.0.0',port=8088)" to "socketio.run(app)" and comment out or delete the last line "gevent.wait()". Start Gunicorn with gunicorn -w 1 -b 0.0.0.0:8088 -k gevent 'sigdata:app'  
+The sigdata.service systemd unit will will also have to be modifed to start gunicorn instead of sigdata.py. 
+
 # 2024-02-22
 Moved tuner reset to the sigdata3.sh script and removed the 10 minute timeout from the sigdata.service, avoiding loss of the web site every 10 minutes. The user only notices a short pause in the update of the real-time data during the tuner reset, which is every 5 minutes (300 seconds) in the new sigdata3.sh script.  
 
