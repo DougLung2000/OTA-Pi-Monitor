@@ -1,11 +1,12 @@
-# 2024-02-25
-The program will work with the Gunicorn WSGI. I will upload the modified files after testing but if you want to test it, change the next to last line in sigdata.py from "socketio.run(app,host='0.0.0.0',port=8088)" to "socketio.run(app)" and comment out or delete the last line "gevent.wait()". Start Gunicorn with gunicorn -w 1 -b 0.0.0.0:8088 -k gevent 'sigdata:app'  
-The sigdata.service systemd unit will will also have to be modifed to start gunicorn instead of sigdata.py. 
+# 2024-09-02
+The OTA-Pi-Monitor files have been updated to use the gunicorn WSGI. Be sure the venv is activated befor entering it and running "pip3 install gunicorn". If upgrading an older install, install the sigdata.py and gunisigdata.service files and disable or delete the sigdata.service file. The gunicorn WSGI is more reliable than the Flask development server and has eliminated issues caused when multiple users try to access the monitor. It also allows configuring certificates and passwords if desired. See https://docs.gunicorn.org/en/stable/ for details on how to use these options. 
+
+After a recent RaspberryPi OS upgrade, the tuner started intermittently failing with i2c errors. A reboot is required to restore the tuner. A USB reset did not work. The tunertest.sh, tunertest.timer, and tunertest.service files have been uploaded to automate the reboot when the tuner failed. The test runs every 10 minutes. Add the systemd files in /etc/systemd/system and the script in "dtvdata" directory if this problem exists on your system. It has not been seen on systems running on the Orange Pi. 
 
 # 2024-02-22
 Moved tuner reset to the sigdata3.sh script and removed the 10 minute timeout from the sigdata.service, avoiding loss of the web site every 10 minutes. The user only notices a short pause in the update of the real-time data during the tuner reset, which is every 5 minutes (300 seconds) in the new sigdata3.sh script.  
 
-# OTA-Pi-Monitor
+# OTA-Pi-Monitor (Updated to add gunicorn install)
 Remotely monitor over-the-air digital TV transmissions with ARM SBCs
 
 These files were used to build the OTA-Pi Monitor to receive TV translator K36OZ. They have been tested on an Orange Pi 4 LTS (4 GB RAM, 16 GB eMMC) and on a Raspberry Pi 5 (4 GB RAM, 32 GB micro-SD card) with the Hauppauge WinTV dualHD ATSC 1.0 tuner. 
@@ -18,7 +19,7 @@ To install, create a "dtvdata" subdirectory in the home directory. The sigdata3.
 
 At this point, you can run the sigdata3.sh script to verify the tuner is working. Use CTRL-C to stop it. 
 
-From the dtvdata directory, create a Python virtual environment called "venv" and activate it. Place the sigdata.py file in this directory and make the "templates" and "static" directories below it. Make a "js" directory in the static directory. Verify you are in the venv folder and the virtual environment is activated - the command prompt will show (venv). Install the required Python modules with "pip3 install flask-socketio" and "pip3 install gevent"
+From the dtvdata directory, create a Python virtual environment called "venv" and activate it. Place the sigdata.py file in this directory and make the "templates" and "static" directories below it. Make a "js" directory in the static directory. Verify you are in the venv folder and the virtual environment is activated - the command prompt will show (venv). Install the required Python modules with "pip3 install flask-socketio", "pip3 install gevent" and "pip3 install gunicorn".
 
 The tscapproc.sh file will need to be modified. In the 5th line change "KMEB-HD" to a program channel name on the channel you are monitoring. Any of the program names will work, but be sure to include any trailing spaces.The file names for the video samples should also be changed. I used the callsign and the program number but that is not critical. Note that these program names will also have to be changed in the index.html file in the templates directory. Also update the video size to match the settings in ffmpeg. The "-p map:3" refers to program number 3. These will need to be modified to match the program numbers in the channel being monitored. Additional lines can be added to monitor more than three program streams. Refer to ffmpeg documentation for details on the command line options.  
 
