@@ -1,0 +1,10 @@
+[Unit]
+Description="Test USB tuner"
+
+[Service]
+Type=simple
+ExecStart=/home/tv/dtvdata/tunertest.sh
+
+
+
+

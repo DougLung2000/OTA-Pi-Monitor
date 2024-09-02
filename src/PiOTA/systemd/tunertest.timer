@@ -1,0 +1,10 @@
+[Unit]
+Description="Run tunertest.service at minutes ending in 5"
+
+[Timer]
+OnCalendar=*:5/10
+Unit=tunertest.service
+
+[Install]
+WantedBy=multi-user.target
+
