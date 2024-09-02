@@ -1,0 +1,16 @@
+[Unit]
+Description=Sigdata service with Gunicorn WSGI server
+
+[Service]
+User=tv
+WorkingDirectory=/home/tv/dtvdata/venv/
+ExecStart=/home/tv/dtvdata/venv/bin/gunicorn -w 1 -b 0.0.0.0:8088 -k gevent 'sigdata-guni2:app'
+ExecReload=/bin/kill -s HUP $MAINPID
+KillMode=mixed
+TimeoutStopSec=5
+PrivateTmp=true
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+
