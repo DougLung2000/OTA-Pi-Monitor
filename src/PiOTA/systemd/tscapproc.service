@@ -3,7 +3,7 @@ Description="Run tscapproc.sh script to capture tranport stream and transcode st
 
 [Service]
 User=pbs
-WorkingDirectory=/home/pbs/dtvdata/
-ExecStart=/home/pbs/dtvdata/tscapproc.sh
+WorkingDirectory=/home/tv/dtvdata/
+ExecStart=/home/tv/dtvdata/tscapproc.sh
 
 
