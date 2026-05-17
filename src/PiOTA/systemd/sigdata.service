@@ -4,7 +4,7 @@ Description=Sigdata service
 [Service]
 User=pbs
 WorkingDirectory=/home/pbs/dtvdata/venv/
-ExecStart=/home/pbs/dtvdata/venv/bin/python3 sigdata.py
+ExecStart=/home/tv/dtvdata/venv/bin/python3 sigdata.py
 Restart=always
 
 [Install]
