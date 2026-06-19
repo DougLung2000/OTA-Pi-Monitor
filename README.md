@@ -196,9 +196,13 @@ Verify the program is working correctly..
 ##### Once complete, to have the programs start on boot or reboot, run:
 
     sudo systemctl enable tscapproc.service
+
+
     
     sudo systemctl enable gunisigdata.service
     
     sudo systemctl enable tunertest.service
 
 ##### Reboot to verify systemd files are working
+#### Web page display:
+<img width="559" height="965" alt="image" src="https://github.com/user-attachments/assets/b494260f-ef69-4782-a1c3-f00717ee7da1" />
