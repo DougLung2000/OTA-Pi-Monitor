@@ -1,0 +1,12 @@
+eventlet
+Flask
+Flask-SocketIO
+gevent
+greenlet
+gunicorn
+itsdangerous
+Jinja2
+MarkupSafe
+simple-websocket
+vext
+Werkzeug
