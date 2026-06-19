@@ -57,9 +57,9 @@ Install Raspberry Pi OS 64 bit "Lite" version with SSH enabled. See Raspberry Pi
 
 ##### Install required: Python files and dependencies:
 
-Download the requirements.txt file from https://github.com/DougLung2000/OTA-Pi-Monitor/blob/main/src/PiOTA/requirements.txt and install in the virtual environment:
+While in the venv directory, download the requirements.txt file:
 
-    scp requirements.txt tv@rpiota36.local://home/tv/dtvdata/venv/
+    wget https://github.com/DougLung2000/OTA-Pi-Monitor/blob/main/src/PiOTA/requirements.txt
 
 Verify venv is active - prompt should show (venv) at start (i.e. (venv) tv@rpiota36:~/dtvdata/venv $)
 
