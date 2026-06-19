@@ -1,32 +1,189 @@
-# 2024-09-02
-The OTA-Pi-Monitor files have been updated to use the gunicorn WSGI. Be sure the venv is activated befor entering it and running "pip3 install gunicorn". If upgrading an older install, install the sigdata.py and gunisigdata.service files and disable or delete the sigdata.service file. The gunicorn WSGI is more reliable than the Flask development server and has eliminated issues caused when multiple users try to access the monitor. It also allows configuring certificates and passwords if desired. See https://docs.gunicorn.org/en/stable/ for details on how to use these options. 
+The OTA-Pi-Monitor is a collection of scripts and programs that will run on a Raspberry Pi or similar device to allow remote monitoring of a TV station. The systme provides a web site displaying real-time SNR/MER, signal level (dBm), continuity error count, and bit rate per PID once configured. A one-minute transport stream is captured every half hour and used to create MPEG-4 file for each configured stream. The video and audio are transcoded and saved with reduced frame rate and, for HD content, reduced resolution, to allow viewing with upload bit rates at or under 2 Mbps. TSDuck is used to provide an analysis of the recorded transport stream.  
 
-After a recent RaspberryPi OS upgrade, the tuner started intermittently failing with i2c errors. A reboot is required to restore the tuner. A USB reset did not work. The tunertest.sh, tunertest.timer, and tunertest.service files have been uploaded to automate the reboot when the tuner failed. The test runs every 10 minutes. Add the systemd files in /etc/systemd/system and the script in "dtvdata" directory if this problem exists on your system. It has not been seen on systems running on the Orange Pi. 
+These files were tested on a Raspberry Pi 5 with 4GB of RAM. It has also been tested on an Orange Pi 4 LTS and may work on other Debian Linux based single board computers if the required DVB firmware and utilities are available. This monitor is designed for use with the Hauppauge WinTV dualHD USB ATSC TV tuner but may be able to be modified to work with other tuners or DTV standard.
 
-# 2024-02-22
-Moved tuner reset to the sigdata3.sh script and removed the 10 minute timeout from the sigdata.service, avoiding loss of the web site every 10 minutes. The user only notices a short pause in the update of the real-time data during the tuner reset, which is every 5 minutes (300 seconds) in the new sigdata3.sh script.  
+Here are the steps required to set up OTA-Pi-Monitor:
 
-# OTA-Pi-Monitor (Updated to add gunicorn install)
-Remotely monitor over-the-air digital TV transmissions with ARM SBCs
+Install Raspberry Pi OS 64 bit "Lite" version with SSH enabled. See Raspberry Pi documentation for headless configuration. 
+SSH to Raspberry Pi
 
-These files were used to build the OTA-Pi Monitor to receive TV translator K36OZ. They have been tested on an Orange Pi 4 LTS (4 GB RAM, 16 GB eMMC) and on a Raspberry Pi 5 (4 GB RAM, 32 GB micro-SD card) with the Hauppauge WinTV dualHD ATSC 1.0 tuner. 
+Install these apt files: (sudo apt install [package name]):
 
-The following programs must be installed. These are the package names for the Raspberry Pi OS (64-bit): virtualenv ffmpeg dvb-tools w-scan  
+  dvb-tools
+  
+  ffmpeg (will install huge number of files)
+  
+  nano (or other preferred text editor)
+  
+  w-scan
+  
+  git
+  
 
-The program uses the tsduck "tsanalyze" program to create the detailed transport stream analysis. This program is not difficult to build from source (see https://github.com/tsduck/tsduck) if the features requiring extra libraries are not built. I have created a binary for the Raspberry Pi 5 OS (64-bit) - tsduck_3.37-3636.debian12_arm64.deb - which can be installed with "sudo dpkg -i tsduck_3.37-3636.debian12_arm64.deb". Verify it works after installation with "tsanalyze --version". If tsanalyze is NOT available, comment out all reference to it in tscapproc.sh. The Python script and index.html in templates will also have to be modified unless a "analysis.txt" file with some arbitrary text is placed in the static directory. It will be displayed below the videos. 
+Configure network (optional) using nmtui:
 
-To install, create a "dtvdata" subdirectory in the home directory. The sigdata3.sh, channels.zap, and tscapproc.sh files go in this directory. Run "w_scan -fa -c US -X > channels.zap" to obtain a list of local channels after the USB tuner and antenna are connected. Edit the list to include only the program streams on the station to be monitored. A simple way to do this is to use grep and the channel center frequency (in Hz): "cat channels.zap | grep '557000000' > channel28.zap" is an example that will save all programs on 557000000 Hz (channel 28) to a new file. Verify the file has the correct programs and then copy it to channels.zap, the file name used in the script (overwriting the full list) The w_scan VSB_8 is not compatible with the dvbv5 tools so use "sed" to replace it: "sed -i 's/VSB_8/8VSB/g' channels.zap"
+  Use settings to configure static IP address and set host name
+  
+  Also configure wi-fi if using, if not, disable it. Two interfaces can cause network issues.
+  
+  Verify last line in /etc/hosts file reflects the new host name - edit it if necessary
+    (this will cause warnings when using sudo if not configured correctly)
 
-At this point, you can run the sigdata3.sh script to verify the tuner is working. Use CTRL-C to stop it. 
+Reboot if network changed
 
-From the dtvdata directory, create a Python virtual environment called "venv" and activate it. Place the sigdata.py file in this directory and make the "templates" and "static" directories below it. Make a "js" directory in the static directory. Verify you are in the venv folder and the virtual environment is activated - the command prompt will show (venv). Install the required Python modules with "pip3 install flask-socketio", "pip3 install gevent" and "pip3 install gunicorn".
+Set up folders:
 
-The tscapproc.sh file will need to be modified. In the 5th line change "KMEB-HD" to a program channel name on the channel you are monitoring. Any of the program names will work, but be sure to include any trailing spaces.The file names for the video samples should also be changed. I used the callsign and the program number but that is not critical. Note that these program names will also have to be changed in the index.html file in the templates directory. Also update the video size to match the settings in ffmpeg. The "-p map:3" refers to program number 3. These will need to be modified to match the program numbers in the channel being monitored. Additional lines can be added to monitor more than three program streams. Refer to ffmpeg documentation for details on the command line options.  
+    mkdir dtvdata
+    
+    cd dtvdata
+    
+Create venv [https://www.w3schools.com/python/python_virtualenv.asp]:
 
-Once these changes have been made, run the tscapproc.sh script to generate the files for the static folder. 
+    python -m venv venv
+    
+Activate venv:
 
-The sigdata.py program can now be run from the virtual environment ("python3 sigdata.py"). The web page should be visible at the IP address of the Pi-OTA server (Raspberry Pi or Orange Pi) with the port number :8088 added to the IP address. The port number can be changed in the last line of the sigdata.py script. Edit the index.html file to change any headings or text as necessary. 
+    source venv/bin/activate
+    
+Setup folders in venv:
 
-After verifying the program is running fine, copy the files in the systemd folder to "/etc/systemd/system/" and enable and start them using systemctl as sudo. The status of the program can be monitoring using the "systemctl status sigdata.service". See systemd documentation for more information on systemd and operation of the tscapproc.timer module that schedules when the video samples are recorded. 
+    cd venv
+    
+    mkdir templates
+    
+    mkdir static
+    
+    mkdir static/js
+    
+Download the requirements.txt file from https://github.com/DougLung2000/OTA-Pi-Monitor/blob/main/src/PiOTA/requirements.txt and install in the virtual environment:
 
-If there are any questions, email me at dlung@transmitter.com
+    scp requirements.txt tv@rpiota36.local://home/tv/dtvdata/venv/
+
+Verify venv is active - prompt show show (venv) at start (i.e. (venv) tv@rpiota36:~/dtvdata/venv $)
+
+Install required: Python files and dependencies:
+
+    pip install -r requirements.txt
+
+virtual environment is no longer needed the rest of the update
+
+    deactivate
+
+Return to home directory to clone files from github
+
+    cd ~
+
+    git clone https://github.com/DougLung2000/OTA-Pi-Monitor.git
+
+Change to github download to complete initial installation
+
+    cd OTA-Pi-Monitor/src/PiOTA/
+
+    cp *.sh ~/dtvdata/
+
+    chmod 755 ~/dtvdata/*.sh
+
+    cp channels.zap ~/dtvdata/
+
+    cp sigdata.py ~/dtvdata/venv/
+
+    cp -R static/* ~/dtvdata/venv/static/
+
+    cp -R templates/* ~/dtvdata/venv/templates/
+
+    sudo dpkg -i tsduck_3.37-3636.debian12_arm64.deb
+
+    sudo cp systemd/* /etc/systemd/system/
+
+System is now set up with default configuration
+
+    cd ~/dtvdata
+
+Test tuner:
+
+    sh ./sigdata3.sh
+    
+        Should show signal data if a channel 36 is present otherwise signal level only - press CTRL-C to exit
+   
+        Ignore "Command inversion" error
+        
+        If "tuning to 605000000 Hz" and signal levels are not displayed check tuner connection
+        
+    sh ./tscapproc.sh
+    
+        This will create the analyze.txt file and save captures from the program streams
+        
+If tuner works, start services:
+
+    sudo systemctl start tscapproc.service
+
+    sudo systemctl start gunisigdata.service
+
+    sudo systemctl start tunertest.service
+
+Next step is to create update files to match the channel you are monitoring
+
+Files to be edited:
+
+    channels.zap
+    
+    sigdata3.sh
+    
+    tscapproc.sh
+
+Scan for channels using w_scan:
+    
+    w_scan -f a -c US -X > channels.zap
+
+Make compatible with dvbv5 programs:
+
+    sed -i 's/VSB_8/8VSB/g' channels.zap
+
+Modifications: sigdata3.sh:
+
+In the 13th lne change 'KMEB-HD' to the program channel name in the channel to be monitored. Any of the program names will work, but be sure to include any trailing spaces.
+
+Modifications: tscapproc.sh:
+
+In the 5th line change "KMEB-HD" to a program channel name on the channel you are monitoring. Any of the program names will work, but be sure to include any trailing spaces.The file names for the video samples should also be changed. I used the callsign and the program number but that is not critical. Note that these program names will also have to be changed in the index.html file in the templates directory. Also update the video size to match the settings in ffmpeg. The "-p map:3" refers to program number 3. These will need to be modified to match the program numbers in the channel being monitored. Additional lines can be added to monitor more than three program streams. Refer to ffmpeg documentation for details on the command line options.
+
+Test modifications to scripts:
+
+    sh ./sigdata3.sh
+    
+        Should show signal data and PIDs for the desired channel
+        
+        Ignore "Command inversion" error
+    
+    sh ./tscapproc.sh
+    
+        Should these files in dtvdata/venv/static:
+        
+            *.mp4 (video files for the streams configured in tscapproc.sh)
+            
+            analyze.txt (transport stream analysis for the configured channel)
+
+
+Modifications: venv/templates/index.html
+
+Replace 'K36OZ' with the callsign or other desired name of the channel being monitored
+
+Change the text and links to the transport stream files generated by ffmpeg. The file names will be the ones you used in tscapproc.sh and be must match the .mp4 filenames in the venv/static/ directory.
+
+Once modifications are completed, run:
+
+    sudo systemctl restart tscapproc.service
+    
+    sudo systemctl restart gunisigdata.service
+    
+    sudo systemctl restart tunertest.service
+
+Verify everything looks good. Once complete, to have the programs start on boot or reboot, run:
+
+    sudo systemctl enable tscapproc.service
+    
+    sudo systemctl enable gunisigdata.service
+    
+    sudo systemctl enable tunertest.service
+
+Reboot to verify systemd files are working
