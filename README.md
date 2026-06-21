@@ -59,7 +59,7 @@ Install Raspberry Pi OS 64 bit "Lite" version with SSH enabled. See Raspberry Pi
 
 While in the venv directory, download the requirements.txt file:
 
-    wget https://github.com/DougLung2000/OTA-Pi-Monitor/blob/main/src/PiOTA/requirements.txt
+    https://github.com/DougLung2000/OTA-Pi-Monitor/raw/refs/heads/main/src/PiOTA/requirements.txt
 
 Verify venv is active - prompt should show (venv) at start (i.e. (venv) tv@rpiota36:~/dtvdata/venv $)
 
