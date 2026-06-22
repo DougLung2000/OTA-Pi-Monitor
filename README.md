@@ -114,7 +114,7 @@ If "tuning to 605000000 Hz" and signal levels are not displayed check tuner conn
 `sh ./tscapproc.sh`
 ```
 
-This will create the analyze.txt file and save captures from the program streams
+This will create the analysis.txt file and save captures from the program streams
 
 ##### If tuner works, start services:
 
