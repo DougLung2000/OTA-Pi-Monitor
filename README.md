@@ -85,7 +85,7 @@ virtual environment is no longer needed the rest of the update
     
     cp channels.zap ~/dtvdata/
     
-    cp sigdata.py ~/dtvdata/venv/
+    cp sigdata-guni2.py ~/dtvdata/venv/
     
     cp -R static/* ~/dtvdata/venv/static/
     
