@@ -3,7 +3,7 @@ echo "Installing packages required for OTA Pi Monitor - This may take a while"
 echo "Enter system password if requested to install system files"
 sudo apt install dvb-tools ffmpeg nano w-scan
 mkdir ~/dtvdata
-python –m venv ~/dtvdata/venv
+python -m venv ~/dtvdata/venv
 cp *.sh ~/dtvdata/
 chmod 755 ~/dtvdata/*.sh
 cp channels.zap ~/dtvdata/
