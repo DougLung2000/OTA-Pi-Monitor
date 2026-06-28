@@ -33,7 +33,7 @@ Install Raspberry Pi OS 64 bit "Lite" version with SSH enabled. See Raspberry Pi
 
     sh ./install-1st.sh
 
-##### If scripts completes successfully, start web server and verify it works:
+##### If script completes successfully, start web server and verify it works:
     
     sudo systemctl start gunisigdata.service
     
