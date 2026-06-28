@@ -17,7 +17,7 @@ Install Raspberry Pi OS 64 bit "Lite" version with SSH enabled. See Raspberry Pi
   Verify last line in /etc/hosts file reflects the new host name - edit it if necessary
     (this will cause warnings when using sudo if not configured correctly)
 
-##### Install this apt files: (sudo apt install [package name]):
+##### Install this apt file: (sudo apt install [package name]):
 
 `  git
 
