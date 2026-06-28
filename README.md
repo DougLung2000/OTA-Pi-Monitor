@@ -25,9 +25,7 @@ Install Raspberry Pi OS 64 bit "Lite" version with SSH enabled. See Raspberry Pi
 
 ##### Clone Github files:
 
-    git clone https://github.com/DougLung2000/OTA-Pi-Monitor.git
-    
-    cd OTA-Pi-Monitor/src/PiOTA
+    git clone https://github.com/DougLung2000/OTA-Pi-Monitor.git && cd OTA-Pi-Monitor/src/PiOTA
 
 ##### Run install script to create required directories, web server, and sample scripts:
 
