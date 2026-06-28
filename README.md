@@ -75,7 +75,7 @@ In the 13th lne change 'KMEB-HD' to the program channel name in the channel to b
 
 In the 5th line change "KMEB-HD" to a program channel name on the channel you are monitoring. Any of the program names will work, but be sure to include any trailing spaces.The file names for the video samples should also be changed. I used the callsign and the program number but that is not critical. Note that these program names will also have to be changed in the index.html file in the templates directory. Also update the video size to match the settings in ffmpeg. The "-p map:3" refers to program number 3. These will need to be modified to match the program numbers in the channel being monitored. Additional lines can be added to monitor more than three program streams. Refer to ffmpeg documentation for details on the command line options.
 
-##### Verify sigdata3.sh scripts is able to receive the configured station (run scripts from dtvdata directory):
+##### Verify sigdata3.sh script is able to receive the configured station (run scripts from dtvdata directory):
 
     sh ./sigdata3.sh
 
