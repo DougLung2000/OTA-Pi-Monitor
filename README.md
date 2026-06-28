@@ -109,21 +109,21 @@ The locations that need to be changed to add or remove PIDs are in the variable 
 
     sudo systemctl daemon-reload
     
-    sudo systemctl restart tscapproc.service
+    sudo systemctl restart tscapproc.timer
     
     sudo systemctl restart gunisigdata.service
     
-    sudo systemctl restart tunertest.service
+    sudo systemctl restart tunertest.timer
 
 Verify the program is working correctly.. 
 
 ##### Once complete, to have the programs start on boot or reboot, run:
 
-    sudo systemctl enable tscapproc.service
+    sudo systemctl enable tscapproc.timer
     
     sudo systemctl enable gunisigdata.service
     
-    sudo systemctl enable tunertest.service
+    sudo systemctl enable tunertest.timer
 
 ##### Reboot to verify systemd files are working
 #### Web page display:
