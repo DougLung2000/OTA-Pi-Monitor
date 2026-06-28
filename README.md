@@ -6,19 +6,7 @@ These files were tested on a Raspberry Pi 5 with 4GB of RAM. It has also been te
 
 #### Here are the steps required to set up OTA-Pi-Monitor:
 
-Install Raspberry Pi OS 64 bit "Lite" version with SSH enabled. See Raspberry Pi documentation for headless configuration.  SSH to Raspberry Pi
-
-##### Install these apt files: (sudo apt install [package name]):
-
-`  dvb-tools`
-
-`  ffmpeg (will install huge number of files)`
-
-`  nano (or other preferred text editor)`
-
-`  w-scan`
-
-`  git`
+Install Raspberry Pi OS 64 bit "Lite" version with SSH enabled. See Raspberry Pi documentation for headless configuration. This configuration depends on a user name "tv". Any other user name will require modifying the scripts and file locations. SSH to Raspberry Pi to complete installation. 
 
 ##### Configure network (optional) using nmtui:
 
@@ -29,108 +17,38 @@ Install Raspberry Pi OS 64 bit "Lite" version with SSH enabled. See Raspberry Pi
   Verify last line in /etc/hosts file reflects the new host name - edit it if necessary
     (this will cause warnings when using sudo if not configured correctly)
 
+##### Install this apt files: (sudo apt install [package name]):
+
+`  git
+
 ##### Reboot if network changed
 
-##### Set up folders:
+##### Clone Github files:
 
-    mkdir dtvdata
-    
-    cd dtvdata
-
-##### Create venv [https://www.w3schools.com/python/python_virtualenv.asp]:
-
-    python -m venv venv
-
-##### Activate venv:
-
-    source venv/bin/activate
-
-##### Setup folders in venv:
-
-    cd venv
-    
-    mkdir templates
-    
-    mkdir static
-    
-    mkdir static/js
-
-##### Install required: Python files and dependencies:
-
-While in the venv directory, download the requirements.txt file:
-
-    wget https://github.com/DougLung2000/OTA-Pi-Monitor/raw/refs/heads/main/src/PiOTA/requirements.txt
-
-Verify venv is active - prompt should show (venv) at start (i.e. (venv) tv@rpiota36:~/dtvdata/venv $)
-
-    pip install -r requirements.txt
-
-virtual environment is no longer needed the rest of the update
-
-    deactivate
-
-##### Return to home directory to clone files from github
-
-    cd ~
-    
     git clone https://github.com/DougLung2000/OTA-Pi-Monitor.git
-
-##### Change to github download directory to complete initial installation
-
-    cd OTA-Pi-Monitor/src/PiOTA/
     
-    cp *.sh ~/dtvdata/
-    
-    chmod 755 ~/dtvdata/*.sh
-    
-    cp channels.zap ~/dtvdata/
-    
-    cp sigdata-guni2.py ~/dtvdata/venv/
-    
-    cp -R static/* ~/dtvdata/venv/static/
-    
-    cp -R templates/* ~/dtvdata/venv/templates/
-    
-    sudo dpkg -i tsduck_3.37-3636.debian12_arm64.deb
-    
-    sudo cp systemd/* /etc/systemd/system/
+    cd OTA-Pi-Monitor/src/PiOTA
 
-### System is now set up with default configuration
+##### Run install script to create required directories, web server, and sample scripts:
 
-    cd ~/dtvdata
+    sh ./install-1st.sh
 
-##### Test tuner:
-
-```
-sh ./sigdata3.sh
-```
-
-Should show signal data if a channel 36 is present otherwise signal level only - press CTRL-C to exit
-
-Ignore "Command inversion" error
-If "tuning to 605000000 Hz" and signal levels are not displayed check tuner connection and rerun script to verify the tuner is connected. 
-
-```
-`sh ./tscapproc.sh`
-```
-
-This will create the analysis.txt file and save captures from the program streams
-
-##### If tuner works, start services:
-
-    sudo systemctl daemon-reload
-    
-    sudo systemctl start tscapproc.service
+##### If scripts completes successfully, start web server and verify it works:
     
     sudo systemctl start gunisigdata.service
     
-    sudo systemctl start tunertest.service
+    sudo systemctl status gunisigdata.service
     
 ##### Use browser to verify web server is working - ###.###.###.### is local IP address of Raspberry Pi
 
     http://###.###.###.###:8088
    
+##### If web server displays default page (video and bit rate data will be missing), stop web server and change to dtvdata directory
+    
+    sudo systemctl stop gunisigdata.service
 
+    cd ~/dtvdata
+    
 #### The following files must be updated to match the channel being monitored
 
     channels.zap
@@ -141,9 +59,9 @@ This will create the analysis.txt file and save captures from the program stream
 
     sigdata-guni2.py # to add or subtract PID bit rate displays
 
-##### Scan for channels using w_scan:
+##### Scan for channels using w_scan2 (run channel scan from dtvdata directory):
 
-    w_scan -f a -c US -X > channels.zap
+    w_scan2 -f a -c US -X > channels.zap
 
 ##### Make compatible with dvbv5 programs:
 
@@ -157,7 +75,7 @@ In the 13th lne change 'KMEB-HD' to the program channel name in the channel to b
 
 In the 5th line change "KMEB-HD" to a program channel name on the channel you are monitoring. Any of the program names will work, but be sure to include any trailing spaces.The file names for the video samples should also be changed. I used the callsign and the program number but that is not critical. Note that these program names will also have to be changed in the index.html file in the templates directory. Also update the video size to match the settings in ffmpeg. The "-p map:3" refers to program number 3. These will need to be modified to match the program numbers in the channel being monitored. Additional lines can be added to monitor more than three program streams. Refer to ffmpeg documentation for details on the command line options.
 
-##### Test modifications to scripts:
+##### Verify sigdata3.sh scripts is able to receive the configured station (run scripts from dtvdata directory):
 
     sh ./sigdata3.sh
 
@@ -165,13 +83,13 @@ Output should show signal data  and PIDs for the desired station
 
 If signal data and PIDs are not displaced or are for the wrong station, check sigdata3.sh configuration. 
 
-Ignore "Command inversion" error
+##### Run tscapproc.sh to test capture of transport stream and creation of transcoded video files:
 
-```
-sh ./tscapproc.sh
-```
+    sh ./tcapproc.sh
 
-##### Verify these files are present in the *dtvdata/venv/static* directory:
+Output should show signal data  and PIDs for the desired station
+
+##### Verify these files are present in the *~/dtvdata/venv/static* directory:
 
 *.mp4 (video files for the streams configured in tascapproc.sh)
 
@@ -204,8 +122,6 @@ Verify the program is working correctly..
 ##### Once complete, to have the programs start on boot or reboot, run:
 
     sudo systemctl enable tscapproc.service
-
-
     
     sudo systemctl enable gunisigdata.service
     
