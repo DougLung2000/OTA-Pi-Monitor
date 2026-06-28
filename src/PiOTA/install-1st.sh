@@ -13,6 +13,7 @@ cp -R static ~/dtvdata/venv/
 cp -R templates ~/dtvdata/venv/
 sudo dpkg -i tsduck_3.37-3636.debian12_arm64.deb
 sudo cp w_scan2 /usr/local/bin
+sudo chmod 755 /usr/local/bin/w_scan2
 sudo cp systemd/* /etc/systemd/system/
 cd ~/dtvdata/venv
 /home/tv/dtvdata/venv/bin/pip3 install -r requirements.txt
