@@ -15,6 +15,7 @@ def scan_channels():
         print(f"Error message: {e.stderr}")
         result = "Scan failed"
         exit()
+    return
 
 def load_channels():
     try:
@@ -121,16 +122,25 @@ def frequency2channel():
 def find_channel(channel_frequency):
     frequency = ""
     while frequency == "":
-        print("Enter RF (transmit) channel number to monitor:")
+        print("Enter RF (transmit) channel number or center frequency in Hertz to monitor:")
         chan = input()
-        if len(chan) > 3 :
-            print("Channel number cannot be more than two digits")
-        else:
+        if len(chan) < 3 :
             try:
                 frequency = channel_frequency[chan]
 #                print("frequency for channel ",chan,": ",frequency)
             except:
                 print("RF channel ",chan," is not valid - must be in the rnage 2 to 36")
+        elif len(chan) > 7 & len(chan) < 10:
+            print("Center frequency {chan} Hz entered")
+            try:
+                frequency2 = chan
+                chan = frequency_channel[frequency2]
+                frequency = channel_frequency[chan]
+#                print("frequency for channel ",chan,": ",frequency2)
+            except:
+                print("RF frequency entered is not valid - must be s U.S. TV center frequency in Hertz")
+        else:
+            print("Channel or center frequency entered is not valid")
     return(frequency)
 
 def find_station(frequency,channel_list):
