@@ -46,36 +46,28 @@ Install Raspberry Pi OS 64 bit "Lite" version with SSH enabled. See Raspberry Pi
 ##### If web server displays default page (video and bit rate data will be missing), stop web server and change to dtvdata directory
     
     sudo systemctl stop gunisigdata.service
-
-    cd ~/dtvdata
     
 #### Run channel_setup.py to scan channels, create scripts to monitor and view transcoded video on the web page
 
-    cd ~/dtvdata
+    cd ~/dtvdata && python channel_setup.py
     
-    python channel_setup.py
+##### After rebooting, generate the transcoded video samples (if transport stream recording doesn't start, plug and unplug tuner)
+
+    cd dtvdata && sh ./tscapproc.sh
+
+##### After script finishes, verify ota.ts and mp4 files are present and not 0 bytes in ~/dtvdata/venv/static:
+
+    ls -l venv/static/
+
+##### If ota.ts and mp4 files are present:
     
-must match the .mp4 filenames in the venv/static/ directory.
-
-##### Modifications: venv/sigdata-guni2.py
-
-The "SignalDataService" function in this script provides the real-time data to the web page. The default configuration will display bit rates for video PIDs decimal 49, 65, and 81. To remove a PID from the bit rate display, comment out all lines associated with it. Other PIDs can be added using the same format.
-
-The locations that need to be changed to add or remove PIDs are in the variable declarations (pid49_rate = '') at the start of the function, in the "if" statements that look for the PID number in the data stream, and in the "SignalData =" statement that provides the formatted real time data to the web page. In the "if" statements looking for the PID bit rate data, the spaces before and after the PID number are important to ensure only the line with the PID data is returned, not other lines with the PID number embedded in a bit rate or other value. 
-
-##### Once modifications are completed, run:
-
-    sudo systemctl daemon-reload
+    sudo systemctl start tscapproc.timer
     
-    sudo systemctl restart tscapproc.timer
+    sudo systemctl start gunisigdata.service
     
-    sudo systemctl restart gunisigdata.service
-    
-    sudo systemctl restart tunertest.timer
+    sudo systemctl start tunertest.timer
 
-Verify the program is working correctly.. 
-
-##### Once complete, to have the programs start on boot or reboot, run:
+##### Use browser to check web page at http:[Raspberry Pi IP address]:8088, if good, to have program start on reboot:
 
     sudo systemctl enable tscapproc.timer
     
@@ -83,6 +75,19 @@ Verify the program is working correctly..
     
     sudo systemctl enable tunertest.timer
 
-##### Reboot to verify systemd files are working
+##### Reboot to verify systemd files are working and web server is working
+
+##### Optional modifications to sigdata-guni2.py to add or remove PIDs for bit rate display
+
+The "SignalDataService" function in this script provides the real-time data to the web page. The default configuration will display bit rates for video PIDs decimal 49, 65, and 81. To remove a PID from the bit rate display, comment out all lines associated with it. Other PIDs can be added using the same format.
+
+The locations that need to be changed to add or remove PIDs are in the variable declarations (pid49_rate = '') at the start of the function, in the "if" statements that look for the PID number in the data stream, and in the "SignalData =" statement that provides the formatted real time data to the web page. In the "if" statements looking for the PID bit rate data, the spaces before and after the PID number are important to ensure only the line with the PID data is returned, not other lines with the PID number embedded in a bit rate or other value. 
+
+If modifications fail, the sigdata-guni2.py file from Github is not modified during a normal install and can be used to replace a modified script that failed.
+
+If there is significant interest in showing additional bit rates, I can look at adding creation of a modified sigdata-guni2.py with all video PIDs displayed to the channel_setup.py script. 
+
+##### IMPORTANT: Once modifications are completed, reboot the Raspberry Pi
+
 #### Web page display:
 <img width="559" height="965" alt="image" src="https://github.com/user-attachments/assets/b494260f-ef69-4782-a1c3-f00717ee7da1" />
