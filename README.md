@@ -10,9 +10,7 @@ The USB driver in the Raspberry Pi may drop i2c packets. The tunertest.sh script
 
 Install Raspberry Pi OS 64 bit "Lite" version with SSH enabled. See Raspberry Pi documentation for headless configuration. This configuration depends on a user name "tv". Any other user name will require modifying the scripts and file locations. SSH to Raspberry Pi to complete installation. Install any available updates:
 
-    sudo apt update
-
-    sudo apt upgrade
+    sudo apt update && sudo apt upgrade
     
 ##### Configure network (optional) using nmtui:
 
