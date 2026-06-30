@@ -63,7 +63,7 @@ Install Raspberry Pi OS 64 bit "Lite" version with SSH enabled. See Raspberry Pi
 
 ##### If ota.ts and mp4 files are present:
     
-    sudo systemctl start tscapproc.timerc && sudo systemctl start gunisigdata.service && sudo systemctl start tunertest.timer
+    sudo systemctl start tscapproc.timer && sudo systemctl start gunisigdata.service && sudo systemctl start tunertest.timer
 
 ##### Use browser to check web page at http:[Raspberry Pi IP address]:8088, if good, to have program start on reboot:
 
