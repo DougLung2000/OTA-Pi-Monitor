@@ -252,7 +252,7 @@ def create_tscapproc_2(ts_data):
     # Get list of program numbers
     pgms = list(ts_data)
     # Create list with ffmpeg command for each program
-    ffmpegCommand = "ffmpeg -i venv/static/ota.ts -map p:"
+    ffmpegCommand = "ffmpeg -i /home/tv/dtvdata/venv/static/ota.ts -map p:"
     VideoLocation = " venv/static/ota-"
     script = "rm -f venv/static/ota*.mp4\n"
     for item in pgms:
@@ -270,7 +270,7 @@ def create_tscapproc_2(ts_data):
             VideoType = "-540.mp4"
         script = script + ffmpegCommand + Program_number + AudioFormat + VideoFormat + VideoLocation + Program_number + VideoType + "\n"
         print(script)
-    script = script + "tsanalyze --usa venv/static/ota.ts > venv/static/analysis.txt"
+    script = script + "tsanalyze --usa venv/static/ota.ts > /home/tv/dtvdata/venv/static/analysis.txt"
     print(script)
     return(script)
 
@@ -340,16 +340,16 @@ script = create_sigdata3(station)
 save_script(script,"sigdata3.sh")
 print(script)
 script = create_tscapproc_1(station)
-save_script(script,"tscapproc_1.sh")
+save_script(script,"/home/tv/dtvdata/tscapproc_1.sh")
 record_ts_file()
 ts_data = analyze_ts()
 script = create_tscapproc_2(ts_data)
-save_script(script,"tscapproc_2.sh")
+save_script(script,"/home/tv/dtvdata/tscapproc_2.sh")
 create_tscapproc()
 script = create_links(ts_data)
 print(script)
-save_script(script,"index-2.html")
-replace_callsign("index-1.html")
+save_script(script,"/home/tv/dtvdata/index-2.html")
+replace_callsign("/home/tv/dtvdata/index-1.html")
 update_webpage()
 
 
