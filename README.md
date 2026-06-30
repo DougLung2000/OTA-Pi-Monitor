@@ -33,15 +33,13 @@ Install Raspberry Pi OS 64 bit "Lite" version with SSH enabled. See Raspberry Pi
 
     git clone https://github.com/DougLung2000/OTA-Pi-Monitor.git && cd OTA-Pi-Monitor/src/PiOTA
 
-##### Run install script to create required directories, web server, and sample scripts:
+##### Run install script to create required directories, web server, and sample scripts (enter user password if requested):
 
     sh ./install-1st.sh
 
 ##### If script completes successfully, start web server and verify it works:
     
-    sudo systemctl start gunisigdata.service
-    
-    sudo systemctl status gunisigdata.service
+    sudo systemctl start gunisigdata.service && sudo systemctl status gunisigdata.service
     
 ##### Use browser to verify web server is working - ###.###.###.### is local IP address of Raspberry Pi
 
@@ -54,7 +52,9 @@ Install Raspberry Pi OS 64 bit "Lite" version with SSH enabled. See Raspberry Pi
 #### Run channel_setup.py to scan channels, create scripts to monitor and view transcoded video on the web page
 
     cd ~/dtvdata && python channel_setup.py
-    
+
+##### After script finished, reboot Raspberry Pi 
+
 ##### After rebooting, generate the transcoded video samples (if transport stream recording doesn't start, plug and unplug tuner)
 
     cd dtvdata && sh ./tscapproc.sh
@@ -65,17 +65,15 @@ Install Raspberry Pi OS 64 bit "Lite" version with SSH enabled. See Raspberry Pi
 
 ##### If ota.ts and mp4 files are present:
     
-    sudo systemctl start tscapproc.timer
-    
-    sudo systemctl start gunisigdata.service
-    
-    sudo systemctl start tunertest.timer
+    sudo systemctl start tscapproc.timerc && sudo systemctl start gunisigdata.service && sudo systemctl start tunertest.timer
 
 ##### Use browser to check web page at http:[Raspberry Pi IP address]:8088, if good, to have program start on reboot:
 
     sudo systemctl enable tscapproc.timer
+
     
     sudo systemctl enable gunisigdata.service
+
     
     sudo systemctl enable tunertest.timer
 
