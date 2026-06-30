@@ -69,13 +69,7 @@ Install Raspberry Pi OS 64 bit "Lite" version with SSH enabled. See Raspberry Pi
 
 ##### Use browser to check web page at http:[Raspberry Pi IP address]:8088, if good, to have program start on reboot:
 
-    sudo systemctl enable tscapproc.timer
-
-    
-    sudo systemctl enable gunisigdata.service
-
-    
-    sudo systemctl enable tunertest.timer
+    sudo systemctl enable tscapproc.timer && sudo systemctl enable gunisigdata.service && sudo systemctl enable tunertest.timer
 
 ##### Reboot to verify systemd files are working and web server is working
 
