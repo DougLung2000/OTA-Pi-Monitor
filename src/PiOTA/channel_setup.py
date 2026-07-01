@@ -301,18 +301,22 @@ def replace_callsign(file):
     while True:
         callsign = input("Enter callsign to show on web page (max 12 alphanumeric characters): ")
         # Check conditions
-        if len(callsign) <= 12:
+        if len(callsign) <= 15:
             break
         else:
-            print("Invalid input. Please ensure it is max 12 characters and only contains letters/numbers.")
+            print("Invalid input. Please ensure it is max 15 characters and only contains letters/numbers.")
     try:
         #print("Changing callsign on web page")
+        command = "cp /home/tv/OTA-Pi-Monitor/src/PiOTA/index-start.html /home/tv/dtvdata/index-1.html")
         command = "sed -i 's/K36OZ/"+callsign+"/g' index-1.html"
         print(command)
         subprocess.run(command, shell=True)
     except subprocess.CalledProcessError as e:
         print(f"Command failed with exit code {e.returncode}")
         print(f"Error message: {e.stderr}")
+        print("Changing label text on web page failed. Exiting setup.")
+        print("Check that index-start.html is available in /home/tv/OTA-Pi-Monitor/src/PiOTA")
+        exit()
     return()
      
 def create_links(ts_data):
@@ -341,7 +345,19 @@ def update_webpage():
             subprocess.run(command, stdout=f, stderr=subprocess.STDOUT)
     f.close()
     return()
-    
+
+def start_systemd_units():
+    try:
+        command = "sudo systemctl start tscapproc.timer gunisigdata.service tunertest.timer"
+        subprocess.run(command, shell=True)
+    except:
+        subprocess.CalledProcessError as e:
+        print(f"Command failed with exit code {e.returncode}")
+        print(f"Error message: {e.stderr}")
+        print("Unable to start systemd services.")
+        print("Try starting manually one by one and use systemctl status to identify the problem.")
+    return()
+
 
 scan_channels()
 channel_list = load_channels()
@@ -367,7 +383,7 @@ print(script)
 save_script(script,"/home/tv/dtvdata/index-2.html")
 replace_callsign("/home/tv/dtvdata/index-1.html")
 update_webpage()
-
+start_systemd_units()
 
 exit()
 
