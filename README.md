@@ -51,23 +51,13 @@ Install Raspberry Pi OS 64 bit "Lite" version with SSH enabled. See Raspberry Pi
 
     cd ~/dtvdata && python channel_setup.py
 
-##### After script finished, reboot Raspberry Pi 
-
-##### After rebooting, generate the transcoded video samples (if transport stream recording doesn't start, plug and unplug tuner)
-
-    cd dtvdata && sh ./tscapproc.sh
-
-##### After script finishes, verify ota.ts and mp4 files are present and not 0 bytes in ~/dtvdata/venv/static:
-
-    ls -l venv/static/
-
 ##### If ota.ts and mp4 files are present:
     
-    sudo systemctl start tscapproc.timer && sudo systemctl start gunisigdata.service && sudo systemctl start tunertest.timer
+    sudo systemctl start tscapproc.timer gunisigdata.service tunertest.timer
 
 ##### Use browser to check web page at http:[Raspberry Pi IP address]:8088, if good, to have program start on reboot:
 
-    sudo systemctl enable tscapproc.timer && sudo systemctl enable gunisigdata.service && sudo systemctl enable tunertest.timer
+    sudo systemctl enable tscapproc.timer gunisigdata.service tunertest.timer
 
 ##### Reboot to verify systemd files are working and web server is working
 
