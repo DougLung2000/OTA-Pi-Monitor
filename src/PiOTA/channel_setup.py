@@ -275,18 +275,11 @@ def create_tscapproc_2(ts_data):
     print(script)
     return(script)
 
-def create_tscapproc():
-    command = ["cat","/home/tv/dtvdata/tscapproc_1.sh","/home/tv/dtvdata/tscapproc_2.sh"]
-    with open("/home/tv/dtvdata/tscapproc.sh", "w") as f:
-            subprocess.run(command, stdout=f, stderr=subprocess.STDOUT)
-    f.close()
-    subprocess.run(["chmod","755","tscapproc.sh"])
+def create_mp4_files():
     try:
-        subprocess.run(["sh","./tscapproc.sh"])
-    except subprocess.CalledProcessError as e:
-        print(f"Command failed with exit code {e.returncode}")
-        print(f"Error message: {e.stderr}")
-        print("Unable to run tscapproc.sh. Exiting setup program.")
+        subprocess.run(["sh","./tscapproc_2.sh"])
+    except:
+        print("Unable to run tscapproc_2.sh. Exiting setup program.")
         print("Check tuner and antenna connection and try setup again.")
         exit()
     directory = Path("/home/tv/dtvdata/venv/static/")
@@ -296,6 +289,16 @@ def create_tscapproc():
     else:
         print("No mp4 files found. Setup will exit. Check tuner connection and try setup again.")
         exit()
+
+
+def create_tscapproc():
+    command = ["cat","/home/tv/dtvdata/tscapproc_1.sh","/home/tv/dtvdata/tscapproc_2.sh"]
+    with open("/home/tv/dtvdata/tscapproc.sh", "w") as f:
+            subprocess.run(command, stdout=f, stderr=subprocess.STDOUT)
+    f.close()
+    subprocess.run(["chmod","755","tscapproc.sh"])
+    return()
+
 
 def replace_callsign(file):
     while True:
@@ -307,7 +310,7 @@ def replace_callsign(file):
             print("Invalid input. Please ensure it is max 15 characters and only contains letters/numbers.")
     try:
         #print("Changing callsign on web page")
-        command = "cp /home/tv/OTA-Pi-Monitor/src/PiOTA/index-start.html /home/tv/dtvdata/index-1.html")
+        command = "cp /home/tv/OTA-Pi-Monitor/src/PiOTA/index-start.html /home/tv/dtvdata/index-1.html"
         command = "sed -i 's/K36OZ/"+callsign+"/g' index-1.html"
         print(command)
         subprocess.run(command, shell=True)
@@ -346,10 +349,14 @@ def update_webpage():
     f.close()
     return()
 
-def start_systemd_units():
+def enable_systemd_units():
     try:
-        command = "sudo systemctl start tscapproc.timer gunisigdata.service tunertest.timer"
+        command = "sudo systemctl enable tscapproc.timer gunisigdata.service tunertest.timer"
         subprocess.run(command, shell=True)
+        print("INSTALLATION HAS COMPLETED")
+        print("REBOOT RASPBERRY PI TO START MONITORING AND WEB SERVER")
+        print("AFTER REBOOT, WEB SITE IS AT: http://[Raspberry Pi IP address]:0888")
+        print("REBOOT NOW USING 'sudo reboot'")
     except:
         subprocess.CalledProcessError as e:
         print(f"Command failed with exit code {e.returncode}")
@@ -377,13 +384,14 @@ record_ts_file()
 ts_data = analyze_ts()
 script = create_tscapproc_2(ts_data)
 save_script(script,"/home/tv/dtvdata/tscapproc_2.sh")
+create_mp4_files()
 create_tscapproc()
 script = create_links(ts_data)
 print(script)
 save_script(script,"/home/tv/dtvdata/index-2.html")
 replace_callsign("/home/tv/dtvdata/index-1.html")
 update_webpage()
-start_systemd_units()
+enable_systemd_units()
 
 exit()
 
