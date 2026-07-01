@@ -139,7 +139,7 @@ def find_channel(channel_frequency):
                 frequency = channel_frequency[chan]
 #                print("frequency for channel ",chan,": ",frequency2)
             except:
-                print("RF frequency entered is not valid - must be s U.S. TV center frequency in Hertz")
+                print("RF frequency entered is not valid - must be s U.S. TV center frequency in Hertz (57000000 to 605000000 Hz)")
         else:
             print("Channel or center frequency entered is not valid")
     return(frequency)
@@ -302,7 +302,7 @@ def create_tscapproc():
 
 def replace_callsign(file):
     while True:
-        callsign = input("Enter callsign to show on web page (max 12 alphanumeric characters): ")
+        callsign = input("Enter callsign to show on web page (max 15 characters): ")
         # Check conditions
         if len(callsign) <= 15:
             break
