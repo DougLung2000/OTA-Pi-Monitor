@@ -35,31 +35,27 @@ Install Raspberry Pi OS 64 bit "Lite" version with SSH enabled. See Raspberry Pi
 
     sh ./install-1st.sh
 
-##### If script completes successfully, start web server and verify it works:
+##### [OPTIONAL] If script completes successfully, start web server and verify it works:
     
     sudo systemctl start gunisigdata.service && sudo systemctl status gunisigdata.service
     
-##### Use browser to verify web server is working - ###.###.###.### is local IP address of Raspberry Pi
+##### [OPTIONAL] Use browser to verify web server is working - ###.###.###.### is local IP address of Raspberry Pi - NO DATA OR VIDEO WILL BE AVAILABLE at this stage
 
     http://###.###.###.###:8088
    
-##### If web server displays default page (video and bit rate data will be missing), stop web server and change to dtvdata directory
+##### Stop web server (if started)
     
     sudo systemctl stop gunisigdata.service
     
-#### Run channel_setup.py to scan channels, create scripts to monitor and view transcoded video on the web page
+#### Run channel_setup.py to configure channels, transcoding, and web page video links
 
     cd ~/dtvdata && python channel_setup.py
 
-##### If ota.ts and mp4 files are present:
+##### If installation completes successfully, reboot to start web server and monitoring functions
     
-    sudo systemctl start tscapproc.timer gunisigdata.service tunertest.timer
+    sudo reboot
 
-##### Use browser to check web page at http:[Raspberry Pi IP address]:8088, if good, to have program start on reboot:
-
-    sudo systemctl enable tscapproc.timer gunisigdata.service tunertest.timer
-
-##### Reboot to verify systemd files are working and web server is working
+##### After reboot, use browser to verify web page at http:[Raspberry Pi IP address]:8088 is functioning. Videos should update on the hour and half hour. 
 
 ##### Optional modifications to sigdata-guni2.py to add or remove PIDs for bit rate display
 
