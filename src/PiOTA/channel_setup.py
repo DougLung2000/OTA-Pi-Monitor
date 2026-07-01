@@ -358,9 +358,6 @@ def enable_systemd_units():
         print("AFTER REBOOT, WEB SITE IS AT: http://[Raspberry Pi IP address]:0888")
         print("REBOOT NOW USING 'sudo reboot'")
     except:
-        subprocess.CalledProcessError as e:
-        print(f"Command failed with exit code {e.returncode}")
-        print(f"Error message: {e.stderr}")
         print("Unable to start systemd services.")
         print("Try starting manually one by one and use systemctl status to identify the problem.")
     return()
