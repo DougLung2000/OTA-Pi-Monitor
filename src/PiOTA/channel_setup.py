@@ -311,12 +311,11 @@ def replace_callsign(file):
     try:
         #print("Changing callsign on web page")
         command = "cp /home/tv/OTA-Pi-Monitor/src/PiOTA/index-start.html /home/tv/dtvdata/index-1.html"
+        subprocess.run(command, shell=True)
         command = "sed -i 's/K36OZ/"+callsign+"/g' index-1.html"
         print(command)
         subprocess.run(command, shell=True)
-    except subprocess.CalledProcessError as e:
-        print(f"Command failed with exit code {e.returncode}")
-        print(f"Error message: {e.stderr}")
+    except:
         print("Changing label text on web page failed. Exiting setup.")
         print("Check that index-start.html is available in /home/tv/OTA-Pi-Monitor/src/PiOTA")
         exit()
