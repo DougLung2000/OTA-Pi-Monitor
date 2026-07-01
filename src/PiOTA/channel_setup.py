@@ -1,8 +1,9 @@
 # Script to scan for channels, set up transport stream capture, and grab a transport stream
 
 import subprocess
-import os
 
+import os
+from pathlib import Path
 def scan_channels():
     try:
         print("This may take several minutes. If scan is very slow, CTRL-C to kill script, unplug and replug in the USB tuner, and try again.")
@@ -280,6 +281,21 @@ def create_tscapproc():
             subprocess.run(command, stdout=f, stderr=subprocess.STDOUT)
     f.close()
     subprocess.run(["chmod","755","tscapproc.sh"])
+    try:
+        subprocess.run(["sh","./tscapproc.sh"])
+    except subprocess.CalledProcessError as e:
+        print(f"Command failed with exit code {e.returncode}")
+        print(f"Error message: {e.stderr}")
+        print("Unable to run tscapproc.sh. Exiting setup program.")
+        print("Check tuner and antenna connection and try setup again.")
+        exit()
+    directory = Path("/home/tv/dtvdata/venv/static/")
+    file_exists = any(directory.glob("*.mp4"))
+    if file_exists:
+        print("At least one mp4 file created. Setup will continue.")
+    else:
+        print("No mp4 files found. Setup will exit. Check tuner connection and try setup again.")
+        exit()
 
 def replace_callsign(file):
     while True:
