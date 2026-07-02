@@ -2,7 +2,7 @@
 
 The system provides a web site displaying real-time SNR/MER, signal level (dBm), continuity error count, and bit rate per PID once configured. A one-minute transport stream is captured every half hour and used to create MPEG-4 file for each configured stream. The video and audio are transcoded and saved with reduced frame rate and, for HD content, reduced resolution, to allow viewing with upload bit rates at or under 2 Mbps. TSDuck is used to provide an analysis of the recorded transport stream.  
 
-These files were tested on a Raspberry Pi 5 with 4GB of RAM. It has also been tested on an Orange Pi 4 LTS and may work on other Debian Linux based single board computers if the required DVB firmware and utilities are available. This monitor is designed for use with the Hauppauge WinTV dualHD USB ATSC TV tuner but may be able to be modified to work with other tuners or DTV standard.
+These files were tested on a Raspberry Pi 5 with 4GB of RAM. It has also been tested on an Orange Pi 4 LTS and may work on other Debian Linux based single board computers if the required DVB firmware and utilities are available. This monitor is designed for use with the Hauppauge WinTV dualHD USB ATSC TV tuner but may be able to be modified to work with other tuners or DTV standard. Thanks to Stephen Gansky for all his help testing and debugging the installation scripts. Without his help they wouldn't have been possible. 
 
 The USB driver in the Raspberry Pi may drop i2c packets. The tunertest.sh script detects this when monitoring and reboots the Pi if this happens but it is not running during configuration. During configuration, if the channel_setup.py script takes more than a few seconds to start scanning or more than a few seconds on each channel, USB tuner communication has likely failed. Abort the configuration with CTRL-C, unplug and replug the USB tuner, and rerun channel_setup.py or reboot the Raspberry Pi. Minimize the chances of this happening by using the USB 2.0 ports (black color) on the Raspberry Pi for the tuner. 
 
@@ -34,18 +34,6 @@ Install Raspberry Pi OS 64 bit "Lite" version with SSH enabled. See Raspberry Pi
 ##### Run install script to create required directories, web server, and sample scripts (enter user password if requested):
 
     sh ./install-1st.sh
-
-##### [OPTIONAL] If script completes successfully, start web server and verify it works:
-    
-    sudo systemctl start gunisigdata.service && sudo systemctl status gunisigdata.service
-    
-##### [OPTIONAL] Use browser to verify web server is working - ###.###.###.### is local IP address of Raspberry Pi - NO DATA OR VIDEO WILL BE AVAILABLE at this stage
-
-    http://###.###.###.###:8088
-   
-##### Stop web server (if started)
-    
-    sudo systemctl stop gunisigdata.service
     
 #### Run channel_setup.py to configure channels, transcoding, and web page video links
 
