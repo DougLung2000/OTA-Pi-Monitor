@@ -45,6 +45,11 @@ Install Raspberry Pi OS 64 bit "Lite" version with SSH enabled. See Raspberry Pi
 
 ##### After reboot, use browser to verify web page at http:[Raspberry Pi IP address]:8088 is functioning. Videos should update on the hour and half hour. 
 
+##### Changing the station a working OTA-Pi-Monitor setup is monitoring:
+The monitored channel and web page can be changed wihtout doing a complete reinstall by running channel_setup.py and following the instructions above starting with:
+
+    cd ~/dtvdata && python channel_setup.py
+
 ##### Optional modifications to sigdata-guni2.py to add or remove PIDs for bit rate display
 
 The "SignalDataService" function in this script provides the real-time data to the web page. The default configuration will display bit rates for video PIDs decimal 49, 65, and 81. To remove a PID from the bit rate display, comment out all lines associated with it. Other PIDs can be added using the same format.
