@@ -255,6 +255,8 @@ def analyze_ts():
         for line in file:
             if "Program" in line:
                 Pgm_number = line.strip().split(' ')[1].strip()
+                if Pgm_number == "" :
+                    break
                 print("Program Number is:",Pgm_number)
                 ts_data.setdefault(Pgm_number,[])
                 video_data = []
