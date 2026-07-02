@@ -1,9 +1,41 @@
 # Script to scan for channels, set up transport stream capture, and grab a transport stream
 
 import subprocess
-
 import os
 from pathlib import Path
+
+def clean_install():
+    # This function removes channel setup specific files from a previous installation
+    print("Removing files from previous installation, if any. Enter password if requested")
+    try:
+        command = "sudo systemctl stop tscapproc.timer gunisigdata.service tunertest.timer"
+        subprocess.run(command, shell=True)
+    except:
+        print("Systemd unit stop failed")
+    try:
+        command = "sudo systemctl disable tscapproc.timer gunisigdata.service tunertest.timer"
+        subprocess.run(command, shell=True)
+    except:
+        print("Failed to disable systemd units")
+    directory = Path("/home/tv/dtvdata/venv/static/")
+    file_exists = any(directory.glob("*.mp4"))
+    if file_exists:
+        for filepath in directory.glob("*.mp4"):
+            filepath.unlink()
+    directory = Path("/home/tv/dtvdata/")
+    file_exists = any(directory.glob("tscapproc*"))
+    if file_exists:
+        for filepath in directory.glob("tscapproc*"):
+            filepath.unlink()
+    Path("/home/tv/dtvdata/venv/static/ota.ts").unlink(missing_ok=True)
+    Path("/home/tv/dtvdata/venv/templates/index.html").unlink(missing_ok=True)
+    Path("/home/tv/dtvdata/index-1.html").unlink(missing_ok=True)
+    Path("/home/tv/dtvdata/index-2.html").unlink(missing_ok=True)
+    Path("/home/tv/dtvdata/otadata.txt").unlink(missing_ok=True)
+    Path("/home/tv/dtvdata/sigdata3.sh").unlink(missing_ok=True)
+    Path("/home/tv/dtvdata/channels.zap").unlink(missing_ok=True)
+    return()
+
 def scan_channels():
     try:
         print("This may take several minutes. If scan is very slow, CTRL-C to kill script, unplug and replug in the USB tuner, and try again.")
@@ -361,7 +393,8 @@ def enable_systemd_units():
         print("Try starting manually one by one and use systemctl status to identify the problem.")
     return()
 
-
+# Main Program
+clean_install()
 scan_channels()
 channel_list = load_channels()
 #print(channel_list)
@@ -373,7 +406,7 @@ station = find_station(frequency,channel_list)
 print("Station data found: ",station,"\n\n")
 script = create_sigdata3(station)
 save_script(script,"sigdata3.sh")
-print(script)
+#print(script)
 script = create_tscapproc_1(station)
 save_script(script,"/home/tv/dtvdata/tscapproc_1.sh")
 record_ts_file()
@@ -383,7 +416,7 @@ save_script(script,"/home/tv/dtvdata/tscapproc_2.sh")
 create_mp4_files()
 create_tscapproc()
 script = create_links(ts_data)
-print(script)
+#print(script)
 save_script(script,"/home/tv/dtvdata/index-2.html")
 replace_callsign("/home/tv/dtvdata/index-1.html")
 update_webpage()
