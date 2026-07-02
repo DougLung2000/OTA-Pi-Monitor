@@ -45,8 +45,8 @@ Install Raspberry Pi OS 64 bit "Lite" version with SSH enabled. See Raspberry Pi
 
 ##### After reboot, use browser to verify web page at http:[Raspberry Pi IP address]:8088 is functioning. Videos should update on the hour and half hour. 
 
-##### Changing the station a working OTA-Pi-Monitor setup is monitoring:
-The monitored channel and web page can be changed wihtout doing a complete reinstall by running channel_setup.py and following the instructions above starting with:
+##### Changing the station a working OTA-Pi-Monitor:
+The monitored channel and web page can be changed wihout doing a complete reinstall by running channel_setup.py and rebooting the Raspberry Pi once the new setup is complete. 
 
     cd ~/dtvdata && python channel_setup.py
 
