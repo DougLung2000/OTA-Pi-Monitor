@@ -256,13 +256,13 @@ def analyze_ts():
             for line in file:
                 if "Program" in line:
                     Pgm_number = line.strip().split(' ')[1].strip()
-                    if Pgm_number == "" :
-                        print("Program with no number dropped")
-                        break 
-                    print("Program Number is:",Pgm_number)
-                    ts_data.setdefault(Pgm_number,[])
-                    video_data = []
-                    audio_data = []
+                    if len(Pgm_number) < 3 :
+                        #print("Program Number is:",Pgm_number)
+                        ts_data.setdefault(Pgm_number,[])
+                        video_data = []
+                        audio_data = []
+                    else:
+                        Pgm_number = "9999999"
                 if " Video: " in line:
                     video_PID = line.strip().split(":")[1]
                     video_PID = video_PID.split("[")[1]
@@ -273,15 +273,17 @@ def analyze_ts():
                     print("Video size of Program",Pgm_number,"is",video_size)
                     video_data = [video_PID,video_size]
                 if " Audio: " in line:
-                    audio_PID = line.strip().split(":")[1]
-                    audio_PID = audio_PID.split("[")[1]
-                    audio_PID = audio_PID.split("]")[0]
-                    audio_type = line.strip().split(",")[2].strip()
-                    audio_rate = line.strip().split(",")[4].strip()
-                    print("Audio PID of Program",Pgm_number,"is",audio_PID,"type",audio_type,"at",audio_rate)
-                    if audio_data == []:
-                        audio_data=[audio_PID,audio_type]
-                    ts_data[Pgm_number].append([video_data,audio_data])
+                    if len(Pgm_number) < 3:
+                        audio_PID = line.strip().split(":")[1]
+                        audio_PID = audio_PID.split("[")[1]
+                        audio_PID = audio_PID.split("]")[0]
+                        audio_type = line.strip().split(",")[2]
+                        audio_rate = line.strip().split(",")[4]
+                        print("Audio PID of Program",Pgm_number,"is",audio_PID,"type",audio_type,"at",audio_rate)
+                        if audio_data == []:
+                            audio_data=[audio_PID,audio_type]
+                        ts_data[Pgm_number].append([video_data,audio_data])
+                        #print(video_data,audio_data)
         except:
             print("Transport stream has errors. Check antenna connection")
             print("and verify sufficient signal level and SNR >= 20 dB.")
