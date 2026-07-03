@@ -256,7 +256,7 @@ def analyze_ts():
             for line in file:
                 if "Program" in line:
                     Pgm_number = line.strip().split(' ')[1].strip()
-                    if Pgm_number = "" :
+                    if Pgm_number == "" :
                         print("Program with no number dropped")
                         break 
                     print("Program Number is:",Pgm_number)
