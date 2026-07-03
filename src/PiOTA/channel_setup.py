@@ -162,7 +162,7 @@ def find_channel(channel_frequency):
                 frequency = channel_frequency[chan]
 #                print("frequency for channel ",chan,": ",frequency)
             except:
-                print("RF channel ",chan," is not valid - must be in the rnage 2 to 36")
+                print("RF channel ",chan," is not valid - must be in the range 2 to 36")
         elif len(chan) > 7 & len(chan) < 10:
             print("Center frequency {chan} Hz entered")
             try:
@@ -285,7 +285,8 @@ def analyze_ts():
         except:
             print("Transport stream has errors. Check antenna connection")
             print("and verify sufficient signal level and SNR >= 20 dB.")
-            print("Rerun channel_setup.py after improving signal quality.")
+            print("Reboot Raspberry Pi to clear any i2c bus errors.")
+            print("Rerun channel_setup.py after improving signal quality and rebooting.")
             print("Exiting setup.")
             ts_data = {}
             exit()
