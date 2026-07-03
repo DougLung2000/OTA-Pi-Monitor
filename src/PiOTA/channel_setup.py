@@ -252,35 +252,40 @@ def analyze_ts():
     otadata = "otadata.txt"
     ts_data = {}
     with open(otadata, mode='r') as file:
-        for line in file:
-            if "Program" in line:
-                Pgm_number = line.strip().split(' ')[1].strip()
-                if Pgm_number == "" :
-                    break
-                print("Program Number is:",Pgm_number)
-                ts_data.setdefault(Pgm_number,[])
-                video_data = []
-                audio_data = []
-            if " Video: " in line:
-                video_PID = line.strip().split(":")[1]
-                video_PID = video_PID.split("[")[1]
-                video_PID = video_PID.split("]")[0]
-                print("Video PID of Program",Pgm_number,"is",video_PID)
-                video_size = line.strip().split(",")[3]
-                video_size = video_size.split("[")[0].strip()
-                print("Video size of Program",Pgm_number,"is",video_size)
-                video_data = [video_PID,video_size]
-            if " Audio: " in line:
-                audio_PID = line.strip().split(":")[1]
-                audio_PID = audio_PID.split("[")[1]
-                audio_PID = audio_PID.split("]")[0]
-                audio_type = line.strip().split(",")[2].strip()
-                audio_rate = line.strip().split(",")[4].strip()
-                print("Audio PID of Program",Pgm_number,"is",audio_PID,"type",audio_type,"at",audio_rate)
-                if audio_data == []:
-                    audio_data=[audio_PID,audio_type]
-                ts_data[Pgm_number].append([video_data,audio_data])
-                
+        try:
+            for line in file:
+                if "Program" in line:
+                    Pgm_number = line.strip().split(' ')[1].strip()
+                    print("Program Number is:",Pgm_number)
+                    ts_data.setdefault(Pgm_number,[])
+                    video_data = []
+                    audio_data = []
+                if " Video: " in line:
+                    video_PID = line.strip().split(":")[1]
+                    video_PID = video_PID.split("[")[1]
+                    video_PID = video_PID.split("]")[0]
+                    print("Video PID of Program",Pgm_number,"is",video_PID)
+                    video_size = line.strip().split(",")[3]
+                    video_size = video_size.split("[")[0].strip()
+                    print("Video size of Program",Pgm_number,"is",video_size)
+                    video_data = [video_PID,video_size]
+                if " Audio: " in line:
+                    audio_PID = line.strip().split(":")[1]
+                    audio_PID = audio_PID.split("[")[1]
+                    audio_PID = audio_PID.split("]")[0]
+                    audio_type = line.strip().split(",")[2].strip()
+                    audio_rate = line.strip().split(",")[4].strip()
+                    print("Audio PID of Program",Pgm_number,"is",audio_PID,"type",audio_type,"at",audio_rate)
+                    if audio_data == []:
+                        audio_data=[audio_PID,audio_type]
+                    ts_data[Pgm_number].append([video_data,audio_data])
+        except:
+            print("Transport stream has errors. Check antenna connection")
+            print("and verify sufficient signal level and SNR >= 20 dB.")
+            print("Rerun channel_setup.py after improving signal quality.")
+            print("Exiting setup.")
+            ts_data = {}
+            exit()
     return(ts_data)
 
 def create_tscapproc_2(ts_data):
