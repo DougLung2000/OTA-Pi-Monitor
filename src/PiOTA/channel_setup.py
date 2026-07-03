@@ -241,7 +241,7 @@ def record_ts_file():
 def analyze_ts():
     try:
         print("Extracting data from ota.ts file for analysis")
-        command = ["ffprobe","/home/tv/dtvdata/venv/static/ota.ts","-show_format","-output_format","csv"]
+        command = ["ffprobe","/home/tv/dtvdata/venv/static/ota.ts","-analyzeduration","50000000","-probesize","50000000","-show_format","-output_format","csv"]
         with open("otadata.txt", "w") as f:
             subprocess.run(command, stdout=f, stderr=subprocess.STDOUT)
         f.close()
@@ -256,6 +256,9 @@ def analyze_ts():
             for line in file:
                 if "Program" in line:
                     Pgm_number = line.strip().split(' ')[1].strip()
+                    if Pgm_number = "" :
+                        print("Program with no number dropped")
+                        break 
                     print("Program Number is:",Pgm_number)
                     ts_data.setdefault(Pgm_number,[])
                     video_data = []
