@@ -55,7 +55,7 @@ def scan_channels():
         print("After verifying antenna cable has signals, reboot and run")
         print("channel_setup.py again.")
         print("Exiting setup script.")
-        exit(()
+        exit()
     return
 
 def load_channels():
