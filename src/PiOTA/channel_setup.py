@@ -48,6 +48,14 @@ def scan_channels():
         print(f"Error message: {e.stderr}")
         result = "Scan failed"
         exit()
+    file_path = pathlib.Path("channels.zap")
+    if file_path.is_file() and file_path.stat().st_size == 0:
+        print("WARNING: Channel scan found no usable channels!")
+        print("Test antenna connection to the tuner and verify signals are present")
+        print("After verifying antenna cable has signals, reboot and run")
+        print("channel_setup.py again.")
+        print("Exiting setup script.")
+        exit(()
     return
 
 def load_channels():
