@@ -407,7 +407,7 @@ def enable_systemd_units():
         subprocess.run(command, shell=True)
         print("INSTALLATION HAS COMPLETED")
         print("REBOOT RASPBERRY PI TO START MONITORING AND WEB SERVER")
-        print("AFTER REBOOT, WEB SITE IS AT: http://[Raspberry Pi IP address]:0888")
+        print("AFTER REBOOT, WEB SITE IS AT: http://[Raspberry Pi IP address]:8088")
         print("REBOOT NOW USING 'sudo reboot'")
     except:
         print("Unable to start systemd services.")
